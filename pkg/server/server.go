@@ -15,7 +15,7 @@ func (s *Server) RunServer(port string) error {
 
 	s.httpServer = &http.Server{
 		// adjusting server settings
-		Addr:           ":" + port,
+		Addr:           port,
 		MaxHeaderBytes: 1 << 20,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
