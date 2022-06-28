@@ -1,10 +1,17 @@
 package handler
 
 import (
+	"github.com/SimilarEgs/CRUD-TODO-LIST/pkg/service"
 	"github.com/gin-gonic/gin"
 )
 
 type Hanlder struct {
+	services *service.Service // our handlers will envoke service methods
+}
+
+// implementing service dependencies
+func NewHandler(services *service.Service) *Hanlder {
+	return &Hanlder{services: services}
 }
 
 // initializing project endpoints
