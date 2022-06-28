@@ -8,7 +8,7 @@ type Hanlder struct {
 }
 
 // initializing project endpoints
-func (h *Hanlder) initRoutes() *gin.Engine {
+func (h *Hanlder) InitRoutes() *gin.Engine {
 
 	// creating router instance
 	router := gin.New()
@@ -16,31 +16,31 @@ func (h *Hanlder) initRoutes() *gin.Engine {
 	// creating group of endpoints for authorization and registration
 	auth := router.Group("/auth")
 	{
-		auth.POST("/sign-in")
-		auth.POST("/sign-up")
+		auth.POST("/sign-in", h.signIn)
+		auth.POST("/sign-up", h.signUp)
 	}
 
 	// creating API endpoints to work with list
 
 	api := router.Group("/api")
 	{
-		// creating lists CRUD group
+		// creating group of lists CRUD
 		lists := api.Group("/lists")
 		{
-			lists.POST("/")
-			lists.GET("/id")
-			lists.GET("/id:")
-			lists.PUT("/id:")
-			lists.DELETE("/id:")
+			lists.POST("/", h.createList)
+			lists.GET("/", h.getAllLists)
+			lists.GET("/:id", h.getListById)
+			lists.PUT("/:id", h.updateListById)
+			lists.DELETE("/:id", h.deleteListById)
 
 			// create subsidiary group for lists work
 			items := lists.Group(":id/items")
 			{
-				items.POST("/")
-				items.GET("/")
-				items.GET("/:item_id")
-				items.PUT("/:item_id")
-				items.DELETE("/:item_id:")
+				items.POST("/", h.createItem)
+				items.GET("/", h.getAllItems)
+				items.GET("/:item_id", h.getItemById)
+				items.PUT("/:item_id", h.updateItemById)
+				items.DELETE("/:item_id", h.deleteItemById)
 			}
 
 		}
