@@ -31,6 +31,7 @@ func main() {
 	}
 }
 
+// this function will load config.yml file
 func InitConfig() error {
 	viper.AddConfigPath("config")
 	viper.SetConfigName("config")
