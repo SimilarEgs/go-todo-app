@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -20,7 +19,7 @@ func main() {
 		log.Fatalf("[Error] failed to load config file: %s\n", err.Error())
 	}
 
-	// load .env files
+	// load .env file
 	if err := godotenv.Load(".env"); err != nil {
 		log.Fatalf("[Error] .env file didn't load: %s", err.Error())
 	}
@@ -42,8 +41,6 @@ func main() {
 	repos := service.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
-
-	fmt.Println(viper.GetString("port"))
 
 	// initializing server instance, and check for error
 	srv := new(server.Server)
