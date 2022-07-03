@@ -17,7 +17,6 @@ func NewHandler(services *service.Service) *Hanlder {
 // initializing project endpoints
 func (h *Hanlder) InitRoutes() *gin.Engine {
 
-	// creating router instance
 	router := gin.New()
 
 	// creating group of endpoints for authorization and registration
@@ -31,7 +30,6 @@ func (h *Hanlder) InitRoutes() *gin.Engine {
 
 	api := router.Group("/api")
 	{
-		// creating group of lists CRUD
 		lists := api.Group("/lists")
 		{
 			lists.POST("/", h.createList)
@@ -40,7 +38,6 @@ func (h *Hanlder) InitRoutes() *gin.Engine {
 			lists.PUT("/:id", h.updateListById)
 			lists.DELETE("/:id", h.deleteListById)
 
-			// create subsidiary group for lists work
 			items := lists.Group(":id/items")
 			{
 				items.POST("/", h.createItem)

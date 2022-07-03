@@ -1,8 +1,9 @@
 package entity
 
 type User struct {
+	// validate request body with «gin-binding» fields
 	Id       int    `json:"-"`
-	Name     string `json:"name"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Name     string `json:"name"     binding:"required"`
+	Username string `json:"username" binding:"required,alphanum"`
+	Password string `json:"password" binding:"required,min=6"`
 }

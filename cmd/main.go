@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/server"
@@ -10,10 +9,14 @@ import (
 	"github.com/SimilarEgs/CRUD-TODO-LIST/pkg/service"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
 func main() {
+	// setting log fortmat to JSON
+	log.SetFormatter(&log.JSONFormatter{})
+
 	// read confing file and handle erros
 	if err := InitConfig(); err != nil {
 		log.Fatalf("[Error] failed to load config file: %s\n", err.Error())
