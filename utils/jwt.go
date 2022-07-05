@@ -3,38 +3,42 @@ package utils
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/google/uuid"
 )
 
 // payload data of the token
 type TokenClaims struct {
-	ID       uuid.UUID `json:"id"`
-	Username string    `json:"username"`
+	ID       int64  `json:"userid"`
+	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
 // this function return new JWT
-func CreateToken(username string, duration time.Duration) (string, error) {
+func CreateToken(username string, userid int64) (string, error) {
 
 	// setting JWT secure key
 	key := os.Getenv("JWT_SECURITY_KEY")
 	var jwtKey = []byte(key)
 
-	// seting tokenID
-	tokenId, err := uuid.NewRandom()
+	// extracting duration time of the token from config
+	durationStr := os.Getenv("JWT_TOKEN_DURATION_IN_MINUTE")
+	duration, err := strconv.Atoi(durationStr)
 	if err != nil {
 		return "", err
 	}
 
+	// setting expiration time of the token
+	expTokenTime := time.Now().Add(time.Duration(duration) * time.Minute).Unix()
+
 	// createing JWT claims
 	claims := &TokenClaims{
-		ID:       tokenId,
+		ID:       userid,
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(duration).UnixNano(),
+			ExpiresAt: expTokenTime,
 			IssuedAt:  time.Now().Unix(),
 		},
 	}

@@ -12,6 +12,10 @@ type Authorization interface {
 	// this  method takes account data as args
 	// and return generated JWT
 	GenerateToken(username, password string) (string, error)
+
+	// this method takes auth token as args
+	// and return ID of the user affter succsessfull parsing
+	ParseToken(token string) (int64, error)
 }
 
 type TodoList interface {

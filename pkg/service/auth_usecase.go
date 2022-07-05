@@ -1,10 +1,6 @@
 package service
 
 import (
-	"log"
-	"os"
-	"time"
-
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
 	"github.com/SimilarEgs/CRUD-TODO-LIST/utils"
 )
@@ -18,7 +14,7 @@ func NewAuthService(repo RepositoryAuthorization) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-// implementation of createUser method
+// implementation of CreateUser method
 func (s *AuthService) CreateUser(user entity.User) (int, error) {
 
 	var err error
@@ -47,18 +43,23 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 		return "", err
 	}
 
-	// parsing time duration for JWT
-	duration, err := time.ParseDuration(os.Getenv("JWT_TOKEN_DURATION"))
-	if err != nil {
-		return "", err
-	}
-
 	// genereate token
-	token, err := utils.CreateToken(username, duration)
+	token, err := utils.CreateToken(username, user.Id)
 	if err != nil {
 		return "", err
 	}
-	log.Println(token)
 
 	return token, err
+}
+
+// implementation of ParseToken method
+func (s *AuthService) ParseToken(token string) (int64, error) {
+
+	// parsing access token
+	clamis, err := utils.VerifyJWT(token)
+	if err != nil {
+		return 0, err
+	}
+
+	return clamis.ID, err
 }

@@ -54,20 +54,19 @@ func (h *Hanlder) signIn(c *gin.Context) {
 	if err != nil {
 		// error handling for 400 -> unknown users
 		if err == sql.ErrNoRows {
-			newErrorResponse(c, http.StatusBadRequest, "accout with given username not found")
+			newErrorResponse(c, http.StatusBadRequest, "[Error] accout with given username not found")
 			return
 		}
 		// error handilng for 401 -> incorrect pwd
 		if err == bcrypt.ErrMismatchedHashAndPassword {
-			newErrorResponse(c, http.StatusUnauthorized, "invalid login credentials")
+			newErrorResponse(c, http.StatusUnauthorized, "[Error] invalid login credentials")
 			return
 		}
-		newErrorResponse(c, http.StatusInternalServerError, "connection error, try again")
+		newErrorResponse(c, http.StatusInternalServerError, "[Error] connection error, try again")
 		return
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"token": token,
 	})
-
 }

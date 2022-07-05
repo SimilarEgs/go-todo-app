@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	TokenSecurityKey string `mapstructure:"JWT_SECURITY_KEY"`
-	TokenDuration    string `mapstructure:"JWT_TOKEN_DURATION"`
+	TokenDuration    string `mapstructure:"JWT_TOKEN_DURATION_IN_MINUTE"`
 	DBPassword       string `mapstructure:"DB_PASSWORD"`
 	DBPort           string `mapstructure:"DB_PORT"`
 	DBHost           string `mapstructure:"DB_HOST"`
