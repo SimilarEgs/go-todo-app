@@ -34,3 +34,15 @@ func (r *AuthRepository) CreateUser(user entity.User) (int, error) {
 
 	return id, nil
 }
+
+func (r *AuthRepository) GetUser(username string) (entity.User, error) {
+
+	var user entity.User
+
+	// query for user lookup
+	query := fmt.Sprintf("SELECT * FROM %s WHERE username=$1", usersTable)
+
+	err := r.db.Get(&user, query, username)
+
+	return user, err
+}

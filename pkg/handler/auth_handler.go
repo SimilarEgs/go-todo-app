@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (h *Hanlder) signUp(c *gin.Context) {
@@ -30,6 +32,42 @@ func (h *Hanlder) signUp(c *gin.Context) {
 	})
 
 }
+
+// struct for parsing request body
+type singInUserInput struct {
+	Username string `json:"username" binding:"required,alphanum"`
+	Password string `json:"password" binding:"required,min=6"`
+}
+
 func (h *Hanlder) signIn(c *gin.Context) {
+
+	var input singInUserInput
+
+	// validate request body
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// generate JWT and error handling
+	token, err := h.services.Authorization.GenerateToken(input.Username, input.Password)
+	if err != nil {
+		// error handling for 400 -> unknown users
+		if err == sql.ErrNoRows {
+			newErrorResponse(c, http.StatusBadRequest, "accout with given username not found")
+			return
+		}
+		// error handilng for 401 -> incorrect pwd
+		if err == bcrypt.ErrMismatchedHashAndPassword {
+			newErrorResponse(c, http.StatusUnauthorized, "invalid login credentials")
+			return
+		}
+		newErrorResponse(c, http.StatusInternalServerError, "connection error, try again")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"token": token,
+	})
 
 }

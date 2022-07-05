@@ -1,16 +1,13 @@
 package main
 
 import (
-	"os"
-
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/server"
 	"github.com/SimilarEgs/CRUD-TODO-LIST/pkg/handler"
 	"github.com/SimilarEgs/CRUD-TODO-LIST/pkg/repository"
 	"github.com/SimilarEgs/CRUD-TODO-LIST/pkg/service"
-	"github.com/joho/godotenv"
+	"github.com/SimilarEgs/CRUD-TODO-LIST/utils"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
 func main() {
@@ -18,23 +15,19 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 
 	// read confing file and handle erros
-	if err := InitConfig(); err != nil {
-		log.Fatalf("[Error] failed to load config file: %s\n", err.Error())
-	}
-
-	// load .env file
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatalf("[Error] .env file didn't load: %s", err.Error())
+	config, err := utils.InitConfig(".")
+	if err != nil {
+		log.Fatalf("[Error] failed to load config file: %s", err.Error())
 	}
 
 	//initializing db
 	db, err := repository.CreatePostgresDB(repository.Config{
-		Host:     viper.GetString("db.host"),
-		Port:     viper.GetString("db.port"),
-		Username: viper.GetString("db.username"),
-		Password: os.Getenv("db_password"),
-		DBName:   viper.GetString("db.dbname"),
-		SSLMode:  viper.GetString("db.sslmode"),
+		Host:     config.DBHost,
+		Port:     config.DBPort,
+		Username: config.DBUserName,
+		DBName:   config.DBName,
+		Password: config.DBPassword,
+		SSLMode:  config.DBSSLMode,
 	})
 	if err != nil {
 		log.Fatalf("[Error] faild to initilize the data base: %s", err.Error())
@@ -47,14 +40,7 @@ func main() {
 
 	// initializing server instance, and check for error
 	srv := new(server.Server)
-	if err := srv.RunServer(viper.GetString("port"), handlers.InitRoutes()); err != nil {
+	if err := srv.RunServer(config.ServerPort, handlers.InitRoutes()); err != nil {
 		log.Fatalf("[Error] failed to start server: %s", err.Error())
 	}
-}
-
-// this function will load config.yml file
-func InitConfig() error {
-	viper.AddConfigPath("config")
-	viper.SetConfigName("config")
-	return viper.ReadInConfig()
 }

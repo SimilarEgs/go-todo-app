@@ -8,6 +8,10 @@ type Authorization interface {
 	// this method takes User struct as args
 	// and return ID of created user in DB
 	CreateUser(user entity.User) (int, error)
+
+	// this  method takes account data as args
+	// and return generated JWT
+	GenerateToken(username, password string) (string, error)
 }
 
 type TodoList interface {

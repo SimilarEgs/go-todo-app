@@ -8,6 +8,7 @@ import (
 
 type RepositoryAuthorization interface {
 	CreateUser(user entity.User) (int, error)
+	GetUser(username string) (entity.User, error)
 }
 
 type RepositoryTodoList interface {
@@ -24,7 +25,7 @@ type Repository struct {
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		// initializing repository  
+		// initializing repository
 		RepositoryAuthorization: repository.NewAuthRepository(db),
 	}
 }
