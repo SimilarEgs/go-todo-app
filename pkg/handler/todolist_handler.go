@@ -2,6 +2,7 @@ package handler
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -102,7 +103,41 @@ func (h *Hanlder) getListById(c *gin.Context) {
 
 }
 
-func (h *Hanlder) updateListById(c *gin.Context) {
-}
 func (h *Hanlder) deleteListById(c *gin.Context) {
+
+	// fetching user ID
+	userId, ok := c.Get(userCTX)
+	if !ok {
+		newErrorResponse(c, http.StatusInternalServerError, "[Error] user id not found")
+		return
+	}
+
+	// fetching listId and it into int64
+	listId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "[Error] incorect list id")
+		return
+	}
+
+	// calling service layer method
+	err = h.services.DeleteListById(userId.(int64), int64(listId))
+
+	// error handling
+	if err != nil {
+		if err == sql.ErrNoRows {
+			newErrorResponse(c, http.StatusNotFound, "[Error] list with such ID not found")
+			return
+		}
+		newErrorResponse(c, http.StatusInternalServerError, "[Error] connection error, try again")
+		return
+	}
+
+	// formating response msg
+	msg := fmt.Sprintf("[Info] TodoList with ID %d - was successfully deleted", listId)
+
+	// if operation was successfully done, send code 204 to the client and response msg about successful deletion
+	c.JSON(http.StatusOK, msg)
+}
+
+func (h *Hanlder) updateListById(c *gin.Context) {
 }

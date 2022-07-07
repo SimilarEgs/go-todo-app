@@ -35,7 +35,7 @@ func (r *TodoListRepository) CreateList(userId int64, todoList entity.Todolist) 
 	// executing first sql statement
 	row := tx.QueryRow(createListQuery, todoList.Title, todoList.Description)
 
-	// storing list id, if any error aborts the transaction
+	// storing list ID, if any error aborts the transaction
 	if err := row.Scan(&listId); err != nil {
 		tx.Rollback()
 		return 0, nil
@@ -59,8 +59,8 @@ func (r *TodoListRepository) GetAllLists(userId int64) ([]entity.Todolist, error
 	// var for storing user todolists
 	var todoLists []entity.Todolist
 
-	// sql query for getting all lists with associated user id
-	getAllListsQuery := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1",
+	// sql query for getting all lists with associated user ID
+	getAllListsQuery := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul ON tl.id = ul.list_id WHERE ul.user_id = $1",
 		todoListsTable, usersListsTable)
 
 	// exec query
@@ -74,12 +74,24 @@ func (r *TodoListRepository) GetListById(userId, listId int64) (entity.Todolist,
 	// var for storing user todolist
 	var todoList entity.Todolist
 
-	// sql query for getting todolist by id
-	getListById := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2",
+	// sql query for getting todolist by ID
+	getListById := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul ON tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2",
 		todoListsTable, usersListsTable)
 
 	// exec query
 	err := r.db.Get(&todoList, getListById, userId, listId)
 
 	return todoList, err
+}
+
+func (r *TodoListRepository) DeleteListById(userId, listId int64) error {
+
+	// sql query for deleting todolist by ID
+	deleteListById := fmt.Sprintf("DELETE FROM %s tl USING %s ul WHERE tl.id = ul.list_id AND ul.user_id=$1 AND ul.list_id=$2",
+		todoListsTable, usersListsTable)
+
+	// exec query
+	_, err := r.db.Exec(deleteListById, userId, listId)
+
+	return err
 }

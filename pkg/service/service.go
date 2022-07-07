@@ -9,7 +9,7 @@ type Authorization interface {
 	// and return ID of created user in DB
 	CreateUser(user entity.User) (int64, error)
 
-	// this  method takes account data as args
+	// this method takes account data as args
 	// and return generated JWT
 	GenerateToken(username, password string) (string, error)
 
@@ -19,17 +19,21 @@ type Authorization interface {
 }
 
 type TodoList interface {
-	// this method takes ID of the user and TodoList entity
+	// this method takes ID of the user and TodoList entity as args
 	// and return id of created TodoList in db
 	CreateList(userId int64, list entity.Todolist) (int64, error)
 
-	// this method takes user ID
+	// this method takes user ID as args
 	// and return all lists that this user have
 	GetAllLists(userId int64) ([]entity.Todolist, error)
 
-	// this method takes list and user ID
+	// this method takes list and user ID as args
 	// and return associated list
 	GetListById(userId, listId int64) (entity.Todolist, error)
+
+	// this method takes list and user ID as args
+	// and return an error
+	DeleteListById(userId, listId int64) error
 }
 
 type TodoItem interface {
