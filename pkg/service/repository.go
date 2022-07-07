@@ -13,6 +13,7 @@ type RepositoryAuthorization interface {
 
 type RepositoryTodoList interface {
 	CreateList(userId int64, todoList entity.Todolist) (int64, error)
+	GetAllLists(userId int64) ([]entity.Todolist, error)
 }
 
 type RepositoryTodoItem interface {

@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"database/sql"
+	"log"
 	"net/http"
 
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
@@ -37,10 +39,36 @@ func (h *Hanlder) createList(c *gin.Context) {
 	})
 
 }
-func (h *Hanlder) getListById(c *gin.Context) {
-}
+
 func (h *Hanlder) getAllLists(c *gin.Context) {
+	// fetching user ID
+	id, ok := c.Get(userCTX)
+	if !ok {
+		newErrorResponse(c, http.StatusInternalServerError, "[Error] user id not found")
+		return
+	}
+
+	// calling service layer method
+	userLists, err := h.services.GetAllLists(id.(int64))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			newErrorResponse(c, http.StatusInternalServerError, "[Error] there are no todo lists for the current user")
+			return
+		}
+		log.Println(err)
+		newErrorResponse(c, http.StatusInternalServerError, "[Error] connection error, try again")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"TodoLists:": userLists,
+	})
 }
+
+func (h *Hanlder) getListById(c *gin.Context) {
+
+}
+
 func (h *Hanlder) updateListById(c *gin.Context) {
 }
 func (h *Hanlder) deleteListById(c *gin.Context) {

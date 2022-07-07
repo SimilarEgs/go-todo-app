@@ -22,6 +22,10 @@ type TodoList interface {
 	// this method takes ID of the user and TodoList entity
 	// and return id of created TodoList in db
 	CreateList(userId int64, list entity.Todolist) (int64, error)
+
+	// this method takes user ID
+	// and return all lists that this user have
+	GetAllLists(userId int64) ([]entity.Todolist, error)
 }
 
 type TodoItem interface {
