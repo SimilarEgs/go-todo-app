@@ -26,6 +26,10 @@ type TodoList interface {
 	// this method takes user ID
 	// and return all lists that this user have
 	GetAllLists(userId int64) ([]entity.Todolist, error)
+
+	// this method takes list and user ID
+	// and return associated list
+	GetListById(userId, listId int64) (entity.Todolist, error)
 }
 
 type TodoItem interface {

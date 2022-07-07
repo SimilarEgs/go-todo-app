@@ -57,14 +57,29 @@ func (r *TodoListRepository) CreateList(userId int64, todoList entity.Todolist) 
 func (r *TodoListRepository) GetAllLists(userId int64) ([]entity.Todolist, error) {
 
 	// var for storing user todolists
-	var userLists []entity.Todolist
+	var todoLists []entity.Todolist
 
 	// sql query for getting all lists with associated user id
 	getAllListsQuery := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1",
 		todoListsTable, usersListsTable)
 
 	// exec query
-	err := r.db.Select(&userLists, getAllListsQuery, userId)
+	err := r.db.Select(&todoLists, getAllListsQuery, userId)
 
-	return userLists, err
+	return todoLists, err
+}
+
+func (r *TodoListRepository) GetListById(userId, listId int64) (entity.Todolist, error) {
+
+	// var for storing user todolist
+	var todoList entity.Todolist
+
+	// sql query for getting todolist by id
+	getListById := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2",
+		todoListsTable, usersListsTable)
+
+	// exec query
+	err := r.db.Get(&todoList, getListById, userId, listId)
+
+	return todoList, err
 }
