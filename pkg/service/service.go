@@ -5,9 +5,9 @@ import (
 )
 
 type Authorization interface {
-	// this method takes User struct as args
+	// this method takes User entity as args
 	// and return ID of created user in DB
-	CreateUser(user entity.User) (int, error)
+	CreateUser(user entity.User) (int64, error)
 
 	// this  method takes account data as args
 	// and return generated JWT
@@ -19,6 +19,9 @@ type Authorization interface {
 }
 
 type TodoList interface {
+	// this method takes ID of the user and TodoList entity
+	// and return id of created TodoList in db
+	CreateList(userId int64, list entity.Todolist) (int64, error)
 }
 
 type TodoItem interface {
@@ -26,12 +29,13 @@ type TodoItem interface {
 
 type Service struct {
 	Authorization
-	TodoItem
 	TodoList
+	TodoItem
 }
 
 func NewService(repos *Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.RepositoryAuthorization),
+		TodoList:      NewTodoListService(repos.RepositoryTodoList),
 	}
 }

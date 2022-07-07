@@ -7,11 +7,12 @@ import (
 )
 
 type RepositoryAuthorization interface {
-	CreateUser(user entity.User) (int, error)
+	CreateUser(user entity.User) (int64, error)
 	GetUser(username string) (entity.User, error)
 }
 
 type RepositoryTodoList interface {
+	CreateList(userId int64, todoList entity.Todolist) (int64, error)
 }
 
 type RepositoryTodoItem interface {
@@ -27,5 +28,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		// initializing repository
 		RepositoryAuthorization: repository.NewAuthRepository(db),
+		RepositoryTodoList:      repository.NewTodoListRepository(db),
 	}
 }

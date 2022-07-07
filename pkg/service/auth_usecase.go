@@ -15,7 +15,7 @@ func NewAuthService(repo RepositoryAuthorization) *AuthService {
 }
 
 // implementation of CreateUser method
-func (s *AuthService) CreateUser(user entity.User) (int, error) {
+func (s *AuthService) CreateUser(user entity.User) (int64, error) {
 
 	var err error
 

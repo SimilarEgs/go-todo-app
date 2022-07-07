@@ -16,15 +16,15 @@ func NewAuthRepository(db *sqlx.DB) *AuthRepository {
 	return &AuthRepository{db: db}
 }
 
-func (r *AuthRepository) CreateUser(user entity.User) (int, error) {
+func (r *AuthRepository) CreateUser(user entity.User) (int64, error) {
 
-	var id int
+	var id int64
 
 	// query for creation user in db
-	query := fmt.Sprintf("INSERT INTO %s (name, username, hashed_password) VALUES ($1, $2, $3) RETURNING id", usersTable)
+	createUserQuery := fmt.Sprintf("INSERT INTO %s (name, username, hashed_password) VALUES ($1, $2, $3) RETURNING id", usersTable)
 
 	// execution of the sql statement
-	row := r.db.QueryRow(query, user.Name, user.Username, user.Password)
+	row := r.db.QueryRow(createUserQuery, user.Name, user.Username, user.Password)
 
 	// storing user id, checks if any error
 	err := row.Scan(&id)

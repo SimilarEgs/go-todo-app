@@ -10,23 +10,23 @@ import (
 )
 
 func (h *Hanlder) signUp(c *gin.Context) {
-	// var to store user data
+	// var for storing user input data
 	var input entity.User
 
 	// validate request body
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, "[Error] invalid request, try again")
 		return
 	}
 
 	// affter parsing and data validation, send data to the service layer via «CreateUser» method
 	id, err := h.services.Authorization.CreateUser(input)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, "[Error] operation failed, try again")
 		return
 	}
 
-	// if operation was successfully done, send code 201 to the user and json with id of created user
+	// if operation was successfully done, send code 201 to the client and json with id of created user
 	c.JSON(http.StatusCreated, map[string]interface{}{
 		"id": id,
 	})
@@ -45,7 +45,7 @@ func (h *Hanlder) signIn(c *gin.Context) {
 
 	// validate request body
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, "[Error] invalid login credentials")
 		return
 	}
 
