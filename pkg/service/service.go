@@ -31,7 +31,7 @@ type TodoList interface {
 	// and return associated list
 	GetListById(userId, listId int64) (entity.Todolist, error)
 
-	// this method takes list and user ID as args
+	// this method takes user and list ID as args
 	// and return an error
 	DeleteListById(userId, listId int64) error
 }

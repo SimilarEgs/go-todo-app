@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
+	"github.com/SimilarEgs/CRUD-TODO-LIST/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -128,6 +129,10 @@ func (h *Hanlder) deleteListById(c *gin.Context) {
 			newErrorResponse(c, http.StatusNotFound, "[Error] list with such ID not found")
 			return
 		}
+		if err == utils.ErrRowCnt {
+			newErrorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
 		newErrorResponse(c, http.StatusInternalServerError, "[Error] connection error, try again")
 		return
 	}
@@ -136,8 +141,9 @@ func (h *Hanlder) deleteListById(c *gin.Context) {
 	msg := fmt.Sprintf("[Info] TodoList with ID %d - was successfully deleted", listId)
 
 	// if operation was successfully done, send code 204 to the client and response msg about successful deletion
-	c.JSON(http.StatusOK, msg)
+	c.JSON(http.StatusNoContent, msg)
 }
 
 func (h *Hanlder) updateListById(c *gin.Context) {
+
 }

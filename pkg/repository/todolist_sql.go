@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
+	"github.com/SimilarEgs/CRUD-TODO-LIST/utils"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -86,12 +88,38 @@ func (r *TodoListRepository) GetListById(userId, listId int64) (entity.Todolist,
 
 func (r *TodoListRepository) DeleteListById(userId, listId int64) error {
 
+	// mock for checking if a row exists
+	var mock entity.Todolist
+
+	// sql query for getting todolist by ID
+	getListById := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul ON tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2",
+		todoListsTable, usersListsTable)
+
+	// exec checking query
+	err := r.db.Get(&mock, getListById, userId, listId)
+
+	// returns an error if there is no list with requested ID
+	if err == sql.ErrNoRows {
+		return err
+	}
+
 	// sql query for deleting todolist by ID
 	deleteListById := fmt.Sprintf("DELETE FROM %s tl USING %s ul WHERE tl.id = ul.list_id AND ul.user_id=$1 AND ul.list_id=$2",
 		todoListsTable, usersListsTable)
 
 	// exec query
-	_, err := r.db.Exec(deleteListById, userId, listId)
+	res, err := r.db.Exec(deleteListById, userId, listId)
+
+	// check affected rows
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return nil
+	}
+
+	// if now rows affected return coresponding error
+	if rowsAffected != 1 {
+		return utils.ErrRowCnt
+	}
 
 	return err
 }

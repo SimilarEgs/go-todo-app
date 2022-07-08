@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/server"
+	"github.com/SimilarEgs/CRUD-TODO-LIST/logger"
 	"github.com/SimilarEgs/CRUD-TODO-LIST/pkg/handler"
 	"github.com/SimilarEgs/CRUD-TODO-LIST/pkg/repository"
 	"github.com/SimilarEgs/CRUD-TODO-LIST/pkg/service"
@@ -19,6 +20,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("[Error] failed to load config file: %s", err.Error())
 	}
+
+	// load logger
+	logger.InitializeLogging()
 
 	//initializing db
 	db, err := repository.CreatePostgresDB(repository.Config{

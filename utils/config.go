@@ -17,6 +17,8 @@ type Config struct {
 	DBUserName       string `mapstructure:"DB_USERNAME"`
 	DBSSLMode        string `mapstructure:"DB_SSLMODE"`
 	ServerPort       string `mapstructure:"SERVER_PORT"`
+	LoggerPath       string `mapstructure:"LOGGER_OUTPUT"`
+	LoggerLevel      string `mapstructure:"LOGGER_LEVEL"`
 }
 
 // this function load conf file
