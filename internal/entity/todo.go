@@ -1,5 +1,9 @@
 package entity
 
+import (
+	"github.com/SimilarEgs/CRUD-TODO-LIST/utils"
+)
+
 type Todolist struct {
 	Id          int    `json:"id"          db:"id"`
 	Title       string `json:"title"       db:"title" binding:"required"`
@@ -23,4 +27,17 @@ type ListItem struct {
 	Id     int
 	ListId int
 	ItemId int
+}
+
+type UpdateListInput struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+}
+
+// input validator
+func (i UpdateListInput) Validator() error {
+	if i.Title == nil && i.Description == nil {
+		return utils.ErrEmptyPayload
+	}
+	return nil
 }

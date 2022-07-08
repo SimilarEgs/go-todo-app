@@ -20,7 +20,7 @@ func (h *Hanlder) createList(c *gin.Context) {
 		return
 	}
 
-	// var for storing user input data
+	// var for storing input data
 	var input entity.Todolist
 
 	// validate input data
@@ -33,6 +33,7 @@ func (h *Hanlder) createList(c *gin.Context) {
 	listId, err := h.services.TodoList.CreateList(userId.(int64), input)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, "[Error] operation failed, try again")
+		return
 	}
 
 	// if operation was successfully done, send code 201 to the client and json with id of the created list
@@ -77,7 +78,7 @@ func (h *Hanlder) getListById(c *gin.Context) {
 		return
 	}
 
-	// fetching listId and it into int64
+	// fetching listId and convert it into int64
 	listId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "[Error] incorect list id")
@@ -113,7 +114,7 @@ func (h *Hanlder) deleteListById(c *gin.Context) {
 		return
 	}
 
-	// fetching listId and it into int64
+	// fetching listId and convert it into int64
 	listId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "[Error] incorect list id")
@@ -146,4 +147,49 @@ func (h *Hanlder) deleteListById(c *gin.Context) {
 
 func (h *Hanlder) updateListById(c *gin.Context) {
 
+	// fetching user ID
+	userId, ok := c.Get(userCTX)
+	if !ok {
+		newErrorResponse(c, http.StatusInternalServerError, "[Error] user id not found")
+		return
+	}
+
+	// fetching listId and convert it into int64
+	listId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "[Error] incorect list id")
+		return
+	}
+
+	// var for storing input data
+	var input entity.UpdateListInput
+
+	// validate input data
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "[Error] invalid request, try again")
+		return
+	}
+
+	// calling service layer method
+	err = h.services.UpdateListById(userId.(int64), int64(listId), input)
+
+	// error handling
+	if err != nil {
+		if err == sql.ErrNoRows {
+			newErrorResponse(c, http.StatusNotFound, "[Error] list with such ID not found")
+			return
+		}
+		if err == utils.ErrEmptyPayload {
+			newErrorResponse(c, http.StatusBadRequest, err.Error())
+			return
+		}
+		newErrorResponse(c, http.StatusInternalServerError, "[Error] connection error, try again")
+		return
+	}
+
+	//	// formating response msg
+	msg := fmt.Sprintf("[Info] TodoList with ID %d - was successfully updated", listId)
+
+	// if operation was successfully done, send code 200 to the client and json with response msg
+	c.JSON(http.StatusOK, msg)
 }

@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
 	"github.com/SimilarEgs/CRUD-TODO-LIST/utils"
@@ -17,7 +18,7 @@ func NewTodoListRepository(db *sqlx.DB) *TodoListRepository {
 	return &TodoListRepository{db: db}
 }
 
-// this function deals with a transaction of 2 tables:
+// this methid deals with a transaction of 2 tables:
 // 1. insert into todo_lists ...
 // 2. insert into users_lists ... (this table links users to their lists)
 func (r *TodoListRepository) CreateList(userId int64, todoList entity.Todolist) (int64, error) {
@@ -120,6 +121,57 @@ func (r *TodoListRepository) DeleteListById(userId, listId int64) error {
 	if rowsAffected != 1 {
 		return utils.ErrRowCnt
 	}
+
+	return err
+}
+
+// this method checks request data before sending the query to db
+// depending on the updated data -> build an SQL statement using preparation args
+func (r *TodoListRepository) UpdateListById(userId, listId int64, input entity.UpdateListInput) error {
+
+	// mock for checking if a row exists
+	var mock entity.Todolist
+
+	// sql query for getting todolist by ID
+	getListById := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul ON tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2",
+		todoListsTable, usersListsTable)
+
+	// exec checking query
+	err := r.db.Get(&mock, getListById, userId, listId)
+
+	// returns an error if there is no list with requested ID
+	if err == sql.ErrNoRows {
+		return err
+	}
+
+	// args preparation
+	holdValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argsId := 1
+
+	// checking input data
+	// if fields are not nill -> append holdValues slice with corresponding placeholder
+	// and add input title to the args slice
+	if input.Title != nil {
+		holdValues = append(holdValues, fmt.Sprintf("title=$%d", argsId))
+		args = append(args, *input.Title)
+		argsId++
+	}
+	if input.Description != nil {
+		holdValues = append(holdValues, fmt.Sprintf("description=$%d", argsId))
+		args = append(args, *input.Description)
+		argsId++
+	}
+
+	setQuery := strings.Join(holdValues, ",")
+
+	// sql query to update required fields
+	updateListById := fmt.Sprintf("UPDATE %s tl SET %s FROM %s ul WHERE tl.id = ul.list_id AND ul.list_id=$%d AND ul.user_id=$%d",
+		todoListsTable, setQuery, usersListsTable, argsId, argsId+1)
+
+	args = append(args, listId, userId)
+
+	_, err = r.db.Exec(updateListById, args...)
 
 	return err
 }

@@ -26,7 +26,7 @@ func (h *Hanlder) InitRoutes() *gin.Engine {
 		auth.POST("/sign-up", h.signUp)
 	}
 
-	// creating API endpoints of lists
+	// creating API endpoints of todolists
 	// and passing  middlewere authentication handler
 	api := router.Group("/api", h.userAuthMiddleware)
 	{

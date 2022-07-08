@@ -16,6 +16,7 @@ type RepositoryTodoList interface {
 	GetAllLists(userId int64) ([]entity.Todolist, error)
 	GetListById(userId, listId int64) (entity.Todolist, error)
 	DeleteListById(userId, listId int64) error
+	UpdateListById(userId, listId int64, input entity.UpdateListInput) error
 }
 
 type RepositoryTodoItem interface {

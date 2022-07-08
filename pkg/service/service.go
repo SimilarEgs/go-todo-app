@@ -34,6 +34,10 @@ type TodoList interface {
 	// this method takes user and list ID as args
 	// and return an error
 	DeleteListById(userId, listId int64) error
+
+	// this method takes list and user ID with inut data as args
+	// and return an error
+	UpdateListById(userId, listId int64, input entity.UpdateListInput) error
 }
 
 type TodoItem interface {
