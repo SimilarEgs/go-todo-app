@@ -29,14 +29,14 @@ func (r *TodoListRepository) CreateList(userId int64, todoList entity.Todolist) 
 		return 0, err
 	}
 
-	// var for storing the ID of the created list
-	var listId int64
-
 	// query for todoLists entry
 	createListQuery := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id", todoListsTable)
 
 	// executing first sql statement
 	row := tx.QueryRow(createListQuery, todoList.Title, todoList.Description)
+
+	// var for storing ID of the created list
+	var listId int64
 
 	// storing list ID, if any error aborts the transaction
 	if err := row.Scan(&listId); err != nil {

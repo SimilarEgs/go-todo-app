@@ -20,6 +20,7 @@ type RepositoryTodoList interface {
 }
 
 type RepositoryTodoItem interface {
+	CreateItem(listId int64, input entity.TodoItem) (int64, error)
 }
 
 type Repository struct {
@@ -33,5 +34,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 		// initializing repository
 		RepositoryAuthorization: repository.NewAuthRepository(db),
 		RepositoryTodoList:      repository.NewTodoListRepository(db),
+		RepositoryTodoItem:      repository.NewTodoItemRepository(db),
 	}
 }

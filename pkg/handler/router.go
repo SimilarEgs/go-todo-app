@@ -6,7 +6,7 @@ import (
 )
 
 type Hanlder struct {
-	services *service.Service // our handlers will envoke service methods
+	services *service.Service
 }
 
 // implementing service dependencies
@@ -42,11 +42,17 @@ func (h *Hanlder) InitRoutes() *gin.Engine {
 			{
 				items.POST("/", h.createItem)
 				items.GET("/", h.getAllItems)
-				items.GET("/:item_id", h.getItemById)
-				items.PUT("/:item_id", h.updateItemById)
-				items.DELETE("/:item_id", h.deleteItemById)
 			}
 
+		}
+		
+		items := api.Group("items")
+		{
+			items.POST("/", h.createItem)
+			items.GET("/", h.getAllItems)
+			items.GET("/:item_id", h.getItemById)
+			items.PUT("/:item_id", h.updateItemById)
+			items.DELETE("/:item_id", h.deleteItemById)
 		}
 	}
 

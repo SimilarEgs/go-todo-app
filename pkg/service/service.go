@@ -41,6 +41,9 @@ type TodoList interface {
 }
 
 type TodoItem interface {
+	// this method takes user and list ID  with TodoItem entity as args
+	// and return id of created TodoItem in db
+	CreateItem(userId, listId int64, input entity.TodoItem) (int64, error)
 }
 
 type Service struct {
@@ -49,9 +52,10 @@ type Service struct {
 	TodoItem
 }
 
-func NewService(repos *Repository) *Service {
+func NewService(repo *Repository) *Service {
 	return &Service{
-		Authorization: NewAuthService(repos.RepositoryAuthorization),
-		TodoList:      NewTodoListService(repos.RepositoryTodoList),
+		Authorization: NewAuthService(repo.RepositoryAuthorization),
+		TodoList:      NewTodoListService(repo.RepositoryTodoList),
+		TodoItem:      NewTodoItemService(repo.RepositoryTodoItem, repo.RepositoryTodoList),
 	}
 }
