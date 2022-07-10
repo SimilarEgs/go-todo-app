@@ -45,9 +45,13 @@ type TodoItem interface {
 	// and return id of created TodoItem in db
 	CreateItem(userId, listId int64, input entity.TodoItem) (int64, error)
 
-	// this method takes user and list ID
-	// and returns all items of that list ID this user have
+	// this method takes ID of the user and the list
+	// and returns all items of this list that this user have
 	GetAllItems(userId, listId int64) ([]entity.TodoItem, error)
+
+	// this method takes ID of the user and the list item
+	// and return assosiated item of that list
+	GetItemById(userId, itemId int64) (entity.TodoItem, error)
 }
 
 type Service struct {

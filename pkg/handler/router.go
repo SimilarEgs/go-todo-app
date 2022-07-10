@@ -48,8 +48,6 @@ func (h *Hanlder) InitRoutes() *gin.Engine {
 		
 		items := api.Group("items")
 		{
-			items.POST("/", h.createItem)
-			items.GET("/", h.getAllItems)
 			items.GET("/:item_id", h.getItemById)
 			items.PUT("/:item_id", h.updateItemById)
 			items.DELETE("/:item_id", h.deleteItemById)

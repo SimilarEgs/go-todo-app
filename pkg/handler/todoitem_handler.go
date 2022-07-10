@@ -3,6 +3,7 @@ package handler
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -82,6 +83,33 @@ func (h *Hanlder) getAllItems(c *gin.Context) {
 
 func (h *Hanlder) getItemById(c *gin.Context) {
 
+	itemId, err := strconv.Atoi(c.Param("item_id"))
+	if err != nil {
+		log.Println(err)
+		newErrorResponse(c, http.StatusBadRequest, "[Error] invalid request id")
+		return
+	}
+
+	userId, ok := c.Get(userCTX)
+	if !ok {
+		newErrorResponse(c, http.StatusInternalServerError, "[Error] user id not found")
+		return
+	}
+
+	item, err := h.services.TodoItem.GetItemById(userId.(int64), int64(itemId))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			newErrorResponse(c, http.StatusInternalServerError, "[Error] todo task does not exist yet, return no rows")
+			return
+		}
+		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
+		newErrorResponse(c, http.StatusInternalServerError, msg)
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"TodoList Task": item,
+	})
 }
 
 func (h *Hanlder) updateItemById(c *gin.Context) {

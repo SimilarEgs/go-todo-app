@@ -30,10 +30,10 @@ func (r *TodoListRepository) CreateList(userId int64, todoList entity.Todolist) 
 	}
 
 	// query for todoLists entry
-	createListQuery := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id", todoListsTable)
+	createList := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id", todoListsTable)
 
 	// executing first sql statement
-	row := tx.QueryRow(createListQuery, todoList.Title, todoList.Description)
+	row := tx.QueryRow(createList, todoList.Title, todoList.Description)
 
 	// var for storing ID of the created list
 	var listId int64
@@ -45,10 +45,10 @@ func (r *TodoListRepository) CreateList(userId int64, todoList entity.Todolist) 
 	}
 
 	// sql query for usersLists entry
-	createUserListQuery := fmt.Sprintf("INSERT INTO %s (user_id, list_id) VALUES ($1, $2)", usersListsTable)
+	createUserList := fmt.Sprintf("INSERT INTO %s (user_id, list_id) VALUES ($1, $2)", usersListsTable)
 
 	// second sql statement execution
-	_, err = tx.Exec(createUserListQuery, userId, listId)
+	_, err = tx.Exec(createUserList, userId, listId)
 	if err != nil {
 		tx.Rollback()
 		return 0, nil
@@ -63,11 +63,11 @@ func (r *TodoListRepository) GetAllLists(userId int64) ([]entity.Todolist, error
 	var todoLists []entity.Todolist
 
 	// sql query for getting all lists with associated user ID
-	getAllListsQuery := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul ON tl.id = ul.list_id WHERE ul.user_id = $1",
+	getAllLists := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul ON tl.id = ul.list_id WHERE ul.user_id = $1",
 		todoListsTable, usersListsTable)
 
 	// exec query
-	err := r.db.Select(&todoLists, getAllListsQuery, userId)
+	err := r.db.Select(&todoLists, getAllLists, userId)
 
 	return todoLists, err
 }

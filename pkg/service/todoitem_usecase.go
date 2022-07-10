@@ -22,6 +22,10 @@ func (s *TodoItemService) CreateItem(userId, listId int64, input entity.TodoItem
 	return s.repo.CreateItem(listId, input)
 }
 
-func (s *TodoItemService) GetAllItems(userId, listId int64) ([]entity.TodoItem, error){
+func (s *TodoItemService) GetAllItems(userId, listId int64) ([]entity.TodoItem, error) {
 	return s.repo.GetAllItems(userId, listId)
+}
+
+func (s *TodoItemService) GetItemById(userId, listId int64) (entity.TodoItem, error){
+	return s.repo.GetItemById(userId, listId)
 }

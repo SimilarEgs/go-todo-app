@@ -22,6 +22,7 @@ type RepositoryTodoList interface {
 type RepositoryTodoItem interface {
 	CreateItem(listId int64, input entity.TodoItem) (int64, error)
 	GetAllItems(userId, listId int64) ([]entity.TodoItem, error)
+	GetItemById(userId, itemId int64) (entity.TodoItem, error)
 }
 
 type Repository struct {
