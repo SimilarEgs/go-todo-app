@@ -2,6 +2,7 @@ package handler
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
@@ -15,14 +16,16 @@ func (h *Hanlder) signUp(c *gin.Context) {
 
 	// validate request body
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "[Error] invalid request, try again")
+		msg := fmt.Sprintf("[Error] invalid request, try again: %v", err)
+		newErrorResponse(c, http.StatusBadRequest, msg)
 		return
 	}
 
 	// affter parsing and data validation, send data to the service layer via «CreateUser» method
 	id, err := h.services.Authorization.CreateUser(input)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, "[Error] operation failed, try again")
+		msg := fmt.Sprintf("[Error] operation failed, try again: %v", err)
+		newErrorResponse(c, http.StatusInternalServerError, msg)
 		return
 	}
 
@@ -62,7 +65,9 @@ func (h *Hanlder) signIn(c *gin.Context) {
 			newErrorResponse(c, http.StatusUnauthorized, "[Error] invalid login credentials")
 			return
 		}
-		newErrorResponse(c, http.StatusInternalServerError, "[Error] connection error, try again")
+		
+		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
+		newErrorResponse(c, http.StatusInternalServerError, msg)
 		return
 	}
 

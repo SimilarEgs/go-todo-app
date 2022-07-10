@@ -25,14 +25,16 @@ func (h *Hanlder) createList(c *gin.Context) {
 
 	// validate input data
 	if err := c.ShouldBindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "[Error] invalid request, try again")
+		msg := fmt.Sprintf("[Error] invalid request, try again: %v", err)
+		newErrorResponse(c, http.StatusBadRequest, msg)
 		return
 	}
 
 	// calling service layer method
 	listId, err := h.services.TodoList.CreateList(userId.(int64), input)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, "[Error] operation failed, try again")
+		msg := fmt.Sprintf("[Error] operation failed, try again: %v", err)
+		newErrorResponse(c, http.StatusInternalServerError, msg)
 		return
 	}
 
@@ -59,7 +61,8 @@ func (h *Hanlder) getAllLists(c *gin.Context) {
 			newErrorResponse(c, http.StatusInternalServerError, "[Error] there are no todo lists for the current user")
 			return
 		}
-		newErrorResponse(c, http.StatusInternalServerError, "[Error] connection error, try again")
+		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
+		newErrorResponse(c, http.StatusInternalServerError, msg)
 		return
 	}
 
@@ -94,7 +97,8 @@ func (h *Hanlder) getListById(c *gin.Context) {
 			newErrorResponse(c, http.StatusNotFound, "[Error] list with such ID not found")
 			return
 		}
-		newErrorResponse(c, http.StatusInternalServerError, "[Error] connection error, try again")
+		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
+		newErrorResponse(c, http.StatusInternalServerError, msg)
 		return
 	}
 
@@ -134,7 +138,8 @@ func (h *Hanlder) deleteListById(c *gin.Context) {
 			newErrorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
-		newErrorResponse(c, http.StatusInternalServerError, "[Error] connection error, try again")
+		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
+		newErrorResponse(c, http.StatusInternalServerError, msg)
 		return
 	}
 
@@ -166,7 +171,8 @@ func (h *Hanlder) updateListById(c *gin.Context) {
 
 	// validate input data
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "[Error] invalid request, try again")
+		msg := fmt.Sprintf("[Error] invalid request, try again: %v", err)
+		newErrorResponse(c, http.StatusBadRequest, msg)
 		return
 	}
 
@@ -183,7 +189,8 @@ func (h *Hanlder) updateListById(c *gin.Context) {
 			newErrorResponse(c, http.StatusBadRequest, err.Error())
 			return
 		}
-		newErrorResponse(c, http.StatusInternalServerError, "[Error] connection error, try again")
+		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
+		newErrorResponse(c, http.StatusInternalServerError, msg)
 		return
 	}
 

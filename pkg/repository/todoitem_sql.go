@@ -44,3 +44,20 @@ func (r *TodoItemRepository) CreateItem(listId int64, input entity.TodoItem) (in
 
 	return itemId, tx.Commit()
 }
+
+func (r *TodoItemRepository) GetAllItems(userId, listId int64) ([]entity.TodoItem, error) {
+
+	var items []entity.TodoItem
+
+	getAllItemsQuery := fmt.Sprintf(`
+	SELECT ti.id, ti.title, ti.description, ti.done 
+	FROM %s ti INNER JOIN %s li ON li.item_id = ti.id INNER JOIN %s ul ON ul.list_id = li.list_id 
+	WHERE li.list_id = $1 AND ul.user_id = $2`,
+		todoItemsTable, listsItemsTable, usersListsTable)
+
+	if err := r.db.Select(&items, getAllItemsQuery, listId, userId); err != nil {
+		return nil, err
+	}
+
+	return items, nil
+}
