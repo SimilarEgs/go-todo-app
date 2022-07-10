@@ -3,11 +3,11 @@ package handler
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
+	"github.com/SimilarEgs/CRUD-TODO-LIST/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -85,7 +85,6 @@ func (h *Hanlder) getItemById(c *gin.Context) {
 
 	itemId, err := strconv.Atoi(c.Param("item_id"))
 	if err != nil {
-		log.Println(err)
 		newErrorResponse(c, http.StatusBadRequest, "[Error] invalid request id")
 		return
 	}
@@ -112,9 +111,37 @@ func (h *Hanlder) getItemById(c *gin.Context) {
 	})
 }
 
-func (h *Hanlder) updateItemById(c *gin.Context) {
+func (h *Hanlder) deleteItemById(c *gin.Context) {
+
+	itemId, err := strconv.Atoi(c.Param("item_id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "[Error] invalid request id")
+		return
+	}
+
+	userId, ok := c.Get(userCTX)
+	if !ok {
+		newErrorResponse(c, http.StatusInternalServerError, "[Error] user id not found")
+		return
+	}
+
+	err = h.services.TodoItem.DeleteItemById(userId.(int64), int64(itemId))
+
+	if err != nil {
+		if err == utils.ErrRowCnt {
+			newErrorResponse(c, http.StatusBadRequest, err.Error())
+			return
+		}
+		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
+		newErrorResponse(c, http.StatusInternalServerError, msg)
+		return
+	}
+
+	msg := fmt.Sprintf("[Info] TodoList with ID %d - was successfully deleted", itemId)
+	c.JSON(http.StatusOK, msg)
 
 }
-func (h *Hanlder) deleteItemById(c *gin.Context) {
+
+func (h *Hanlder) updateItemById(c *gin.Context) {
 
 }

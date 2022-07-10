@@ -52,6 +52,10 @@ type TodoItem interface {
 	// this method takes ID of the user and the list item
 	// and return assosiated item of that list
 	GetItemById(userId, itemId int64) (entity.TodoItem, error)
+
+	// this method takes user and item ID as args
+	// and return an error
+	DeleteItemById(userId, itemId int64) error
 }
 
 type Service struct {

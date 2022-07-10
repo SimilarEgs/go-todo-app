@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
+	"github.com/SimilarEgs/CRUD-TODO-LIST/utils"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -46,6 +48,21 @@ func (r *TodoItemRepository) CreateItem(listId int64, input entity.TodoItem) (in
 }
 
 func (r *TodoItemRepository) GetAllItems(userId, listId int64) ([]entity.TodoItem, error) {
+	
+	// before sending query to delete list element in the db
+	// checking for list existence -> if not return corresponding error
+	var mock entity.Todolist
+
+	getListById := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul ON tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2",
+		todoListsTable, usersListsTable)
+
+	err := r.db.Get(&mock, getListById, userId, listId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, sql.ErrNoRows
+		}
+		return nil, err
+	}
 
 	var todoListItems []entity.TodoItem
 
@@ -77,4 +94,25 @@ func (r *TodoItemRepository) GetItemById(userId, itemId int64) (entity.TodoItem,
 	}
 
 	return todoListItem, nil
+}
+
+func (r *TodoItemRepository) DeleteItemById(userId, itemId int64) error {
+
+	deleteItemById := fmt.Sprintf(`
+	DELETE FROM %s ti USING %s li, %s ul
+	WHERE ti.id = li.item_id AND li.list_id = ul.list_id AND ul.user_id = $1 AND ti.id = $2`,
+		todoItemsTable, listsItemsTable, usersListsTable)
+
+	res, err := r.db.Exec(deleteItemById, userId, itemId)
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return nil
+	}
+
+	if rowsAffected != 1 {
+		return utils.ErrRowCnt
+	}
+
+	return err
 }

@@ -26,6 +26,10 @@ func (s *TodoItemService) GetAllItems(userId, listId int64) ([]entity.TodoItem, 
 	return s.repo.GetAllItems(userId, listId)
 }
 
-func (s *TodoItemService) GetItemById(userId, listId int64) (entity.TodoItem, error){
+func (s *TodoItemService) GetItemById(userId, listId int64) (entity.TodoItem, error) {
 	return s.repo.GetItemById(userId, listId)
+}
+
+func (s *TodoItemService) DeleteItemById(userId, itemId int64) error {
+	return s.repo.DeleteItemById(userId, itemId)
 }

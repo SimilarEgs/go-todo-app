@@ -94,7 +94,7 @@ func (h *Hanlder) getListById(c *gin.Context) {
 	// error handling
 	if err != nil {
 		if err == sql.ErrNoRows {
-			newErrorResponse(c, http.StatusNotFound, "[Error] list with such ID not found")
+			newErrorResponse(c, http.StatusBadRequest, "[Error] list with such ID not found")
 			return
 		}
 		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
@@ -131,11 +131,11 @@ func (h *Hanlder) deleteListById(c *gin.Context) {
 	// error handling
 	if err != nil {
 		if err == sql.ErrNoRows {
-			newErrorResponse(c, http.StatusNotFound, "[Error] list with such ID not found")
+			newErrorResponse(c, http.StatusBadRequest, "[Error] list with such ID not found")
 			return
 		}
 		if err == utils.ErrRowCnt {
-			newErrorResponse(c, http.StatusNotFound, err.Error())
+			newErrorResponse(c, http.StatusBadRequest, err.Error())
 			return
 		}
 		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
@@ -147,7 +147,7 @@ func (h *Hanlder) deleteListById(c *gin.Context) {
 	msg := fmt.Sprintf("[Info] TodoList with ID %d - was successfully deleted", listId)
 
 	// if operation was successfully done, send code 204 to the client and response msg about successful deletion
-	c.JSON(http.StatusNoContent, msg)
+	c.JSON(http.StatusOK, msg)
 }
 
 func (h *Hanlder) updateListById(c *gin.Context) {
