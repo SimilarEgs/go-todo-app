@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
+	"github.com/SimilarEgs/go-todo-app/internal/entity"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )

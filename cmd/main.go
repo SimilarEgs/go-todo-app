@@ -7,12 +7,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/server"
-	"github.com/SimilarEgs/CRUD-TODO-LIST/logger"
-	"github.com/SimilarEgs/CRUD-TODO-LIST/pkg/handler"
-	"github.com/SimilarEgs/CRUD-TODO-LIST/pkg/repository"
-	"github.com/SimilarEgs/CRUD-TODO-LIST/pkg/service"
-	"github.com/SimilarEgs/CRUD-TODO-LIST/utils"
+	"github.com/SimilarEgs/go-todo-app/internal/server"
+	"github.com/SimilarEgs/go-todo-app/logger"
+	"github.com/SimilarEgs/go-todo-app/pkg/handler"
+	"github.com/SimilarEgs/go-todo-app/pkg/repository"
+	"github.com/SimilarEgs/go-todo-app/pkg/service"
+	"github.com/SimilarEgs/go-todo-app/utils"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 )

@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
-	"github.com/SimilarEgs/CRUD-TODO-LIST/utils"
+	"github.com/SimilarEgs/go-todo-app/internal/entity"
+	"github.com/SimilarEgs/go-todo-app/utils"
 )
 
 // implementing authorization interface

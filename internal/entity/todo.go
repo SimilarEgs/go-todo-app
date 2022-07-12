@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"github.com/SimilarEgs/CRUD-TODO-LIST/utils"
+	"github.com/SimilarEgs/go-todo-app/utils"
 )
 
 type Todolist struct {

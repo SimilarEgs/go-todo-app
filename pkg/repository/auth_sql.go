@@ -3,7 +3,7 @@ package repository
 import (
 	"fmt"
 
-	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
+	"github.com/SimilarEgs/go-todo-app/internal/entity"
 	"github.com/jmoiron/sqlx"
 )
 

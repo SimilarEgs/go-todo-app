@@ -1,4 +1,4 @@
-module github.com/SimilarEgs/CRUD-TODO-LIST
+module github.com/SimilarEgs/go-todo-app
 
 go 1.18
 

@@ -1,6 +1,6 @@
 package service
 
-import "github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
+import "github.com/SimilarEgs/go-todo-app/internal/entity"
 
 type TodoListService struct {
 	repo RepositoryTodoList

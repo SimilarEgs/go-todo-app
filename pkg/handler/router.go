@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/SimilarEgs/CRUD-TODO-LIST/pkg/service"
+	"github.com/SimilarEgs/go-todo-app/pkg/service"
 	"github.com/gin-gonic/gin"
 )
 
