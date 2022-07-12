@@ -1,6 +1,12 @@
 package main
 
 import (
+	"context"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/server"
 	"github.com/SimilarEgs/CRUD-TODO-LIST/logger"
 	"github.com/SimilarEgs/CRUD-TODO-LIST/pkg/handler"
@@ -42,9 +48,38 @@ func main() {
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
 
-	// initializing server instance, and check for error
+	// initializing server instance
 	srv := new(server.Server)
-	if err := srv.RunServer(config.ServerPort, handlers.InitRoutes()); err != nil {
-		log.Fatalf("[Error] failed to start server: %s", err.Error())
+
+	// starting server
+	go func() {
+		if err := srv.RunServer(config.ServerPort, handlers.InitRoutes()); err != nil {
+			log.Fatalf("[Error] failed to start server: %s", err.Error())
+		}
+	}()
+
+	log.Println("[Info] TodoApp started")
+
+	// implementing graceful shutdown
+
+	termChan := make(chan os.Signal)
+	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM)
+
+	<-termChan // blocks untill either SIGINT or SIGTERM is received
+
+	// affter received signal
+	// call ShutDown method and close all db connections
+
+	log.Println("[Info] TodoApp shutting down")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := srv.ShutDownServer(ctx); err != nil {
+		log.Println("[Error] occurred while shutting down the server: %v", err)
+	}
+
+	if err := db.Close(); err != nil {
+		log.Println("[Error] occurred while closing db connection: %v", err)
 	}
 }

@@ -26,6 +26,6 @@ func (s *Server) RunServer(port string, handler http.Handler) error {
 }
 
 // use when exiting application
-func (s *Server) ShutDownServer(ctx context.Context) {
-	s.httpServer.Shutdown(ctx)
+func (s *Server) ShutDownServer(ctx context.Context) error {
+	return s.httpServer.Shutdown(ctx)
 }
