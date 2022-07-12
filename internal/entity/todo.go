@@ -34,9 +34,24 @@ type UpdateListInput struct {
 	Description *string `json:"description"`
 }
 
-// input validator
+// input validator for TodoList struct
 func (i UpdateListInput) Validator() error {
 	if i.Title == nil && i.Description == nil {
+		return utils.ErrEmptyPayload
+	}
+	return nil
+}
+
+type UpdateItemInput struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Done        *bool   `json:"done"`
+}
+
+// input validator for TodoItem struct
+
+func (i UpdateItemInput) Validator() error {
+	if i.Title == nil && i.Description == nil && i.Done == nil {
 		return utils.ErrEmptyPayload
 	}
 	return nil

@@ -62,11 +62,15 @@ func VerifyJWT(tokenString string) (*TokenClaims, error) {
 			return nil, fmt.Errorf("unexpected siging method")
 		}
 		return []byte(jwtKey), nil
+
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	if !token.Valid {
 		return nil, err
 	}
 
-	return claims, nil
+	return claims, err
 }

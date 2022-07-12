@@ -41,7 +41,7 @@ func (r *TodoListRepository) CreateList(userId int64, todoList entity.Todolist) 
 	// storing list ID, if any error aborts the transaction
 	if err := row.Scan(&listId); err != nil {
 		tx.Rollback()
-		return 0, nil
+		return 0, err
 	}
 
 	// sql query for usersLists entry
@@ -51,7 +51,7 @@ func (r *TodoListRepository) CreateList(userId int64, todoList entity.Todolist) 
 	_, err = tx.Exec(createUserList, userId, listId)
 	if err != nil {
 		tx.Rollback()
-		return 0, nil
+		return 0, err
 	}
 
 	return listId, tx.Commit()
@@ -89,6 +89,9 @@ func (r *TodoListRepository) GetListById(userId, listId int64) (entity.Todolist,
 
 func (r *TodoListRepository) DeleteListById(userId, listId int64) error {
 
+	// probably it's a bad idea, check existence of row, before send query of deletion
+	// i guess more idiomatic way, it's to only check affected rows, to avoid DB load
+
 	// mock for checking if a row exists
 	var mock entity.Todolist
 
@@ -100,7 +103,7 @@ func (r *TodoListRepository) DeleteListById(userId, listId int64) error {
 	err := r.db.Get(&mock, getListById, userId, listId)
 
 	// returns an error if there is no list with requested ID
-	if err == sql.ErrNoRows {
+	if err != nil {
 		return err
 	}
 
@@ -114,12 +117,12 @@ func (r *TodoListRepository) DeleteListById(userId, listId int64) error {
 	// check affected rows
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	// if now rows affected return coresponding error
 	if rowsAffected != 1 {
-		return utils.ErrRowCnt
+		return utils.ErrRowCntDel
 	}
 
 	return err
@@ -129,7 +132,7 @@ func (r *TodoListRepository) DeleteListById(userId, listId int64) error {
 // depending on the updated data -> build an SQL statement using preparation args
 func (r *TodoListRepository) UpdateListById(userId, listId int64, input entity.UpdateListInput) error {
 
-	// mock for checking if a row exists
+	// mock to check if the desired update row exists
 	var mock entity.Todolist
 
 	// sql query for getting todolist by ID
@@ -139,8 +142,11 @@ func (r *TodoListRepository) UpdateListById(userId, listId int64, input entity.U
 	// exec checking query
 	err := r.db.Get(&mock, getListById, userId, listId)
 
-	// returns an error if there is no list with requested ID
-	if err == sql.ErrNoRows {
+	// return error if there is no list with requested ID
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return utils.ErrRowCntUp
+		}
 		return err
 	}
 

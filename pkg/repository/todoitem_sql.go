@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
 	"github.com/SimilarEgs/CRUD-TODO-LIST/utils"
@@ -48,7 +49,7 @@ func (r *TodoItemRepository) CreateItem(listId int64, input entity.TodoItem) (in
 }
 
 func (r *TodoItemRepository) GetAllItems(userId, listId int64) ([]entity.TodoItem, error) {
-	
+
 	// before sending query to delete list element in the db
 	// checking for list existence -> if not return corresponding error
 	var mock entity.Todolist
@@ -58,10 +59,7 @@ func (r *TodoItemRepository) GetAllItems(userId, listId int64) ([]entity.TodoIte
 
 	err := r.db.Get(&mock, getListById, userId, listId)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, sql.ErrNoRows
-		}
-		return nil, err
+		return nil, err // sql.ErrNoRows
 	}
 
 	var todoListItems []entity.TodoItem
@@ -74,6 +72,10 @@ func (r *TodoItemRepository) GetAllItems(userId, listId int64) ([]entity.TodoIte
 
 	if err := r.db.Select(&todoListItems, getAllItemsQuery, listId, userId); err != nil {
 		return nil, err
+	}
+
+	if len(todoListItems) == 0 {
+		return nil, utils.ErrRowCntGet
 	}
 
 	return todoListItems, nil
@@ -98,6 +100,19 @@ func (r *TodoItemRepository) GetItemById(userId, itemId int64) (entity.TodoItem,
 
 func (r *TodoItemRepository) DeleteItemById(userId, itemId int64) error {
 
+	var mock entity.TodoItem
+
+	getItemById := fmt.Sprintf(`
+	SELECT ti.id, ti.title, ti.description, ti.done
+	FROM %s ti INNER JOIN %s li ON li.item_id = ti.id INNER JOIN %s ul ON ul.list_id = li.list_id
+	WHERE ti.id = $1 AND ul.user_id = $2`,
+		todoItemsTable, listsItemsTable, usersListsTable)
+
+	err := r.db.Get(&mock, getItemById, itemId, userId)
+	if err != nil {
+		return err
+	}
+
 	deleteItemById := fmt.Sprintf(`
 	DELETE FROM %s ti USING %s li, %s ul
 	WHERE ti.id = li.item_id AND li.list_id = ul.list_id AND ul.user_id = $1 AND ti.id = $2`,
@@ -107,12 +122,64 @@ func (r *TodoItemRepository) DeleteItemById(userId, itemId int64) error {
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	if rowsAffected != 1 {
-		return utils.ErrRowCnt
+		return utils.ErrRowCntDel
 	}
+
+	return err
+}
+
+func (r *TodoItemRepository) UpdateItemById(userId, itemId int64, input entity.UpdateItemInput) error {
+
+	var mock entity.TodoItem
+
+	getItemById := fmt.Sprintf(`
+	SELECT ti.id, ti.title, ti.description, ti.done
+	FROM %s ti INNER JOIN %s li ON li.item_id = ti.id INNER JOIN %s ul ON ul.list_id = li.list_id
+	WHERE ti.id = $1 AND ul.user_id = $2`,
+		todoItemsTable, listsItemsTable, usersListsTable)
+
+	err := r.db.Get(&mock, getItemById, itemId, userId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return utils.ErrRowCntUp
+		}
+		return err
+	}
+
+	holdValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argsId := 1
+
+	if input.Title != nil {
+		holdValues = append(holdValues, fmt.Sprintf("title=$%d", argsId))
+		args = append(args, *input.Title)
+		argsId++
+	}
+	if input.Description != nil {
+		holdValues = append(holdValues, fmt.Sprintf("description=$%d", argsId))
+		args = append(args, *input.Description)
+		argsId++
+	}
+	if input.Done != nil {
+		holdValues = append(holdValues, fmt.Sprintf("done=$%d", argsId))
+		args = append(args, *input.Done)
+		argsId++
+	}
+
+	setQuery := strings.Join(holdValues, ",")
+
+	updateItemById := fmt.Sprintf(`
+	UPDATE %s ti SET %s FROM %s li, %s ul
+	WHERE ti.id = li.item_id AND li.list_id = ul.list_id AND ul.user_id =$%d AND ti.id =$%d`,
+		todoItemsTable, setQuery, listsItemsTable, usersListsTable, argsId, argsId+1)
+
+	args = append(args, userId, itemId)
+
+	_, err = r.db.Exec(updateItemById, args...)
 
 	return err
 }

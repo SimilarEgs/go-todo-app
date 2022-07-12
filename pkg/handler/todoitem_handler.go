@@ -36,7 +36,8 @@ func (h *Hanlder) createItem(c *gin.Context) {
 	itemId, err := h.services.TodoItem.CreateItem(userId.(int64), int64(listId), input)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			newErrorResponse(c, http.StatusNotFound, "[Error] todo list with such ID not found")
+			msg := fmt.Sprintf("[Error] todo list with ID %d - not found", listId)
+			newErrorResponse(c, http.StatusBadRequest, msg)
 			return
 		}
 
@@ -68,6 +69,11 @@ func (h *Hanlder) getAllItems(c *gin.Context) {
 	items, err := h.services.TodoItem.GetAllItems(userId.(int64), int64(listId))
 	if err != nil {
 		if err == sql.ErrNoRows {
+			msg := fmt.Sprintf("[Error] todo list item with ID %d - not found", listId)
+			newErrorResponse(c, http.StatusBadRequest, msg)
+			return
+		}
+		if err == utils.ErrRowCntGet {
 			newErrorResponse(c, http.StatusInternalServerError, "[Error] there are no active schedules for current todo lists")
 			return
 		}
@@ -98,7 +104,8 @@ func (h *Hanlder) getItemById(c *gin.Context) {
 	item, err := h.services.TodoItem.GetItemById(userId.(int64), int64(itemId))
 	if err != nil {
 		if err == sql.ErrNoRows {
-			newErrorResponse(c, http.StatusInternalServerError, "[Error] todo task does not exist yet, return no rows")
+			msg := fmt.Sprintf("[Error] todo list item with ID %d - not found", itemId)
+			newErrorResponse(c, http.StatusBadRequest, msg)
 			return
 		}
 		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
@@ -128,7 +135,12 @@ func (h *Hanlder) deleteItemById(c *gin.Context) {
 	err = h.services.TodoItem.DeleteItemById(userId.(int64), int64(itemId))
 
 	if err != nil {
-		if err == utils.ErrRowCnt {
+		if err == sql.ErrNoRows {
+			msg := fmt.Sprintf("[Error] todo list item with ID - %d not found", itemId)
+			newErrorResponse(c, http.StatusBadRequest, msg)
+			return
+		}
+		if err == utils.ErrRowCntDel {
 			newErrorResponse(c, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -137,11 +149,51 @@ func (h *Hanlder) deleteItemById(c *gin.Context) {
 		return
 	}
 
-	msg := fmt.Sprintf("[Info] TodoList with ID %d - was successfully deleted", itemId)
+	msg := fmt.Sprintf("[Info] todo list item with ID %d - was successfully deleted", itemId)
 	c.JSON(http.StatusOK, msg)
 
 }
 
 func (h *Hanlder) updateItemById(c *gin.Context) {
 
+	itemId, err := strconv.Atoi(c.Param("item_id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "[Error] invalid request id")
+		return
+	}
+
+	userId, ok := c.Get(userCTX)
+	if !ok {
+		newErrorResponse(c, http.StatusInternalServerError, "[Error] user id not found")
+		return
+	}
+
+	var input entity.UpdateItemInput
+
+	if err := c.BindJSON(&input); err != nil {
+		msg := fmt.Sprintf("[Error] invalid request, try again: %v", err)
+		newErrorResponse(c, http.StatusBadRequest, msg)
+		return
+	}
+
+	err = h.services.TodoItem.UpdateItemById(userId.(int64), int64(itemId), input)
+
+	if err != nil {
+		if err == utils.ErrRowCntUp {
+			msg := fmt.Sprintf("[Error] todo list item with ID  - %d not found", itemId)
+			newErrorResponse(c, http.StatusBadRequest, msg)
+			return
+		}
+		if err == utils.ErrEmptyPayload {
+			newErrorResponse(c, http.StatusBadRequest, err.Error())
+			return
+		}
+		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
+		newErrorResponse(c, http.StatusInternalServerError, msg)
+		return
+	}
+
+	msg := fmt.Sprintf("[Info] todo list item with ID - %d was successfully updated", itemId)
+
+	c.JSON(http.StatusOK, msg)
 }

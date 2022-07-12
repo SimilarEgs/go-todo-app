@@ -55,7 +55,7 @@ func (h *Hanlder) getAllLists(c *gin.Context) {
 	}
 
 	// calling service layer method
-	userLists, err := h.services.GetAllLists(userId.(int64))
+	userLists, err := h.services.TodoList.GetAllLists(userId.(int64))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			newErrorResponse(c, http.StatusInternalServerError, "[Error] there are no todo lists for the current user")
@@ -89,12 +89,13 @@ func (h *Hanlder) getListById(c *gin.Context) {
 	}
 
 	// calling service layer method
-	userList, err := h.services.GetListById(userId.(int64), int64(listId))
+	userList, err := h.services.TodoList.GetListById(userId.(int64), int64(listId))
 
 	// error handling
 	if err != nil {
 		if err == sql.ErrNoRows {
-			newErrorResponse(c, http.StatusBadRequest, "[Error] list with such ID not found")
+			msg := fmt.Sprintf("[Error] todo list item ID %d - not found", listId)
+			newErrorResponse(c, http.StatusBadRequest, msg)
 			return
 		}
 		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
@@ -126,15 +127,17 @@ func (h *Hanlder) deleteListById(c *gin.Context) {
 	}
 
 	// calling service layer method
-	err = h.services.DeleteListById(userId.(int64), int64(listId))
+	err = h.services.TodoList.DeleteListById(userId.(int64), int64(listId))
 
 	// error handling
 	if err != nil {
 		if err == sql.ErrNoRows {
-			newErrorResponse(c, http.StatusBadRequest, "[Error] list with such ID not found")
+			msg := fmt.Sprintf("[Error] todo list with ID %d - not found", listId)
+			newErrorResponse(c, http.StatusBadRequest, msg)
 			return
 		}
-		if err == utils.ErrRowCnt {
+		// probably code error, cuz error above will allways trown instead of this one
+		if err == utils.ErrRowCntDel {
 			newErrorResponse(c, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -177,12 +180,13 @@ func (h *Hanlder) updateListById(c *gin.Context) {
 	}
 
 	// calling service layer method
-	err = h.services.UpdateListById(userId.(int64), int64(listId), input)
+	err = h.services.TodoList.UpdateListById(userId.(int64), int64(listId), input)
 
 	// error handling
 	if err != nil {
-		if err == sql.ErrNoRows {
-			newErrorResponse(c, http.StatusNotFound, "[Error] list with such ID not found")
+		if err == utils.ErrRowCntUp {
+			msg := fmt.Sprintf("[Error] todo list with ID %d - not found", listId)
+			newErrorResponse(c, http.StatusBadRequest, msg)
 			return
 		}
 		if err == utils.ErrEmptyPayload {
@@ -194,7 +198,7 @@ func (h *Hanlder) updateListById(c *gin.Context) {
 		return
 	}
 
-	//	// formating response msg
+	// formating response msg
 	msg := fmt.Sprintf("[Info] TodoList with ID %d - was successfully updated", listId)
 
 	// if operation was successfully done, send code 200 to the client and json with response msg

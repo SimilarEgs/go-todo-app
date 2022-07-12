@@ -46,6 +46,7 @@ func (h *Hanlder) userAuthMiddleware(c *gin.Context) {
 	userId, err := h.services.Authorization.ParseToken(jwtToken)
 	if err != nil {
 		newErrorResponse(c, http.StatusUnauthorized, "[Error] unauthorized, invalid authorization token")
+		return
 	}
 
 	// setting user id in ctx for use in further handlers

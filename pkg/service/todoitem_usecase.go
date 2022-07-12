@@ -1,6 +1,8 @@
 package service
 
-import "github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
+import (
+	"github.com/SimilarEgs/CRUD-TODO-LIST/internal/entity"
+)
 
 type TodoItemService struct {
 	repo     RepositoryTodoItem
@@ -32,4 +34,13 @@ func (s *TodoItemService) GetItemById(userId, listId int64) (entity.TodoItem, er
 
 func (s *TodoItemService) DeleteItemById(userId, itemId int64) error {
 	return s.repo.DeleteItemById(userId, itemId)
+}
+
+func (s *TodoItemService) UpdateItemById(userId, itemId int64, input entity.UpdateItemInput) error {
+	// validate request payload, before sending it on repo layer
+	if err := input.Validator(); err != nil {
+		return err
+	}
+
+	return s.repo.UpdateItemById(userId, itemId, input)
 }

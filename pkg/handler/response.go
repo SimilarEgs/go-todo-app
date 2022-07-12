@@ -14,7 +14,7 @@ type statusResponse struct {
 }
 
 func newErrorResponse(c *gin.Context, statusCode int, msg string) {
-	// log error to the console
+	// logging error
 	log.Error(msg)
 	// if error -> block and prevent pending handlers -> send as resp http code and msg body
 	c.AbortWithStatusJSON(statusCode, errorResponse{msg})

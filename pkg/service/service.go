@@ -35,7 +35,7 @@ type TodoList interface {
 	// and return an error
 	DeleteListById(userId, listId int64) error
 
-	// this method takes list and user ID with inut data as args
+	// this method takes list and user ID with ipnut data as args
 	// and return an error
 	UpdateListById(userId, listId int64, input entity.UpdateListInput) error
 }
@@ -56,6 +56,10 @@ type TodoItem interface {
 	// this method takes user and item ID as args
 	// and return an error
 	DeleteItemById(userId, itemId int64) error
+
+	// this method takes item and user ID with input data as args
+	// and return an error
+	UpdateItemById(userId, itemId int64, input entity.UpdateItemInput) error
 }
 
 type Service struct {

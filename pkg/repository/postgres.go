@@ -33,6 +33,5 @@ func CreatePostgresDB(cfg Config) (*sqlx.DB, error) {
 		return nil, err
 	}
 
-	// return db
 	return db, nil
 }
