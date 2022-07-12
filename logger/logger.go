@@ -23,7 +23,7 @@ func InitializeLogging() {
 			Error("[Error] failed to set log level")
 	}
 	log.SetLevel(level)
-
+	
 	log.SetFormatter(&log.JSONFormatter{})
 
 }
