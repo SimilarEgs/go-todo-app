@@ -24,7 +24,7 @@ type Config struct {
 // this function load conf file
 func InitConfig(path string) (config Config, err error) {
 	viper.AddConfigPath(path)
-	viper.SetConfigName("config")
+	viper.SetConfigName("app")
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()
@@ -34,7 +34,7 @@ func InitConfig(path string) (config Config, err error) {
 		return
 	}
 
-	if err = godotenv.Load("config.env"); err != nil {
+	if err = godotenv.Load("app.env"); err != nil {
 		log.Fatalf("[Error] .env file didn't load: %s", err.Error())
 	}
 

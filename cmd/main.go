@@ -39,6 +39,7 @@ func main() {
 		Password: config.DBPassword,
 		SSLMode:  config.DBSSLMode,
 	})
+
 	if err != nil {
 		log.Fatalf("[Error] faild to initilize the data base: %s", err.Error())
 	}

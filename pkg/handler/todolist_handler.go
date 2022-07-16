@@ -94,7 +94,7 @@ func (h *Hanlder) getListById(c *gin.Context) {
 	// error handling
 	if err != nil {
 		if err == sql.ErrNoRows {
-			msg := fmt.Sprintf("[Error] todo list item ID %d - not found", listId)
+			msg := fmt.Sprintf("[Error] todo list with ID %d - not found", listId)
 			newErrorResponse(c, http.StatusBadRequest, msg)
 			return
 		}

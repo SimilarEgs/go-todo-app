@@ -25,7 +25,6 @@ type Config struct {
 }
 
 func CreatePostgresDB(cfg Config) (*sqlx.DB, error) {
-
 	// open db conn, ping db, check for errors
 	db, err := sqlx.Connect("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode))

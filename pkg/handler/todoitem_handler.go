@@ -69,7 +69,7 @@ func (h *Hanlder) getAllItems(c *gin.Context) {
 	items, err := h.services.TodoItem.GetAllItems(userId.(int64), int64(listId))
 	if err != nil {
 		if err == sql.ErrNoRows {
-			msg := fmt.Sprintf("[Error] todo list item with ID %d - not found", listId)
+			msg := fmt.Sprintf("[Error] todo list with %d - does not contain items", listId)
 			newErrorResponse(c, http.StatusBadRequest, msg)
 			return
 		}
