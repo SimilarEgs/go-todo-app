@@ -20,7 +20,7 @@ FROM alpine
 WORKDIR /app
 
 RUN mkdir logger
-# RUN touch log.log
+
 
 COPY --from=builder /app/main . 
 COPY --from=builder /app/migrate.linux-amd64 ./migrate
@@ -37,5 +37,5 @@ ENTRYPOINT [ "/app/start.sh" ]
 
 #docker run --name test-app --network app-network -p 8080:8080 web-app
 #docker build -t web-app .
-
+#docker network create app-network
 

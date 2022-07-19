@@ -8,13 +8,15 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
     volumes:
-      - ./.database/postgres/data:/var/lib/postgresql/data
+      - pg-data:/var/lib/postgresql/data
   app:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    volumes:
+      - ./logger:/app/logger
     environment:
       - DB_PASSWORD=postgres
       - DB_PORT=5432
@@ -31,4 +33,9 @@ services:
         "--",
         "/app/start.sh"
       ]
+
     command: [ "/app/main" ]
+
+volumes:
+  pg-data:
+  api:
