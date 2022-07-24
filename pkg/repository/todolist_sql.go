@@ -21,7 +21,7 @@ func NewTodoListRepository(db *sqlx.DB) *TodoListRepository {
 // this methid deals with a transaction of 2 tables:
 // 1. insert into todo_lists ...
 // 2. insert into users_lists ... (this table links users to their lists)
-func (r *TodoListRepository) CreateList(userId int64, todoList entity.Todolist) (int64, error) {
+func (r *TodoListRepository) CreateList(userId int64, todoList entity.CreateListInput) (int64, error) {
 
 	// prepare new transaction
 	tx, err := r.db.Begin()

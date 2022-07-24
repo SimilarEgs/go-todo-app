@@ -10,6 +10,19 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// @Summary     SignUp
+// @Tags        Auth
+// @Description Creates new user account
+// @ID          create-user
+// @Accept      json
+// @Produce     json
+// @Param       input         body      entity.User true "data for registering a new user"
+// @Success     201           {integer} integer			 1
+// @Failure     400 	      {object}  errorResponse
+// @Failure     404           {object}  errorResponse
+// @Failure     500           {object}  errorResponse
+// @Failure     default       {object}  errorResponse
+// @Router      /auth/sign-up [post]
 func (h *Hanlder) signUp(c *gin.Context) {
 	// var for storing user input data
 	var input entity.User
@@ -42,6 +55,19 @@ type singInUserInput struct {
 	Password string `json:"password" binding:"required,min=6"`
 }
 
+// @Summary     SignIn
+// @Tags        Auth
+// @Description login using user credentials
+// @ID          login
+// @Accept      json
+// @Produce     json
+// @Param       input   	   body     singInUserInput true "login credentials"
+// @Success     200     	   {string} string          "token"
+// @Failure     400     	   {object} errorResponse
+// @Failure     404     	   {object} errorResponse
+// @Failure     500     	   {object} errorResponse
+// @Failure     default        {object} errorResponse
+// @Router      /auth/sign-in  [post]
 func (h *Hanlder) signIn(c *gin.Context) {
 
 	var input singInUserInput
@@ -65,7 +91,7 @@ func (h *Hanlder) signIn(c *gin.Context) {
 			newErrorResponse(c, http.StatusUnauthorized, "[Error] invalid login credentials")
 			return
 		}
-		
+
 		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
 		newErrorResponse(c, http.StatusInternalServerError, msg)
 		return

@@ -8,7 +8,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
     volumes:
-      - pg-data:/var/lib/postgresql/data
+      - pg-data:/var/lib/postgresql/data # named volume
   app:
     build:
       context: .
@@ -16,7 +16,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./logger:/app/logger
+      - ./logger:/app/logger # bind mount
     environment:
       - DB_PASSWORD=postgres
       - DB_PORT=5432
@@ -38,4 +38,3 @@ services:
 
 volumes:
   pg-data:
-  api:

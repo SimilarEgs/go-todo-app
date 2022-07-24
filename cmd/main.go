@@ -17,7 +17,21 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// @title       Todo-App
+// @version     1.0
+// @description This is a visual documentation of the endpoints of my todo-app project
+
+// @contact.name Alex
+// @contact.url  https://github.com/SimilarEgs
+
+// @host     	 localhost:8080
+// @BasePath     /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in   header
+// @name Authorization
 func main() {
+
 	// setting log fortmat to JSON
 	log.SetFormatter(&log.JSONFormatter{})
 

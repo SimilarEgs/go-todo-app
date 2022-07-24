@@ -11,7 +11,7 @@ func NewTodoListService(repo RepositoryTodoList) *TodoListService {
 }
 
 // this method passes user data at the repository layer, no additional logic is required in the implementation here
-func (s *TodoListService) CreateList(userId int64, list entity.Todolist) (int64, error) {
+func (s *TodoListService) CreateList(userId int64, list entity.CreateListInput) (int64, error) {
 	return s.repo.CreateList(userId, list)
 }
 
@@ -36,6 +36,6 @@ func (s *TodoListService) UpdateListById(userId, listId int64, input entity.Upda
 	if err := input.Validator(); err != nil {
 		return err
 	}
-	
+
 	return s.repo.UpdateListById(userId, listId, input)
 }

@@ -1,0 +1,355 @@
+basePath: /
+definitions:
+  entity.CreateListInput:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  entity.Todolist:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+    required:
+    - title
+    type: object
+  entity.UpdateListInput:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  entity.User:
+    properties:
+      name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      username:
+        type: string
+    required:
+    - name
+    - password
+    - username
+    type: object
+  handler.errorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  handler.getAllListsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/entity.Todolist'
+        type: array
+    type: object
+  handler.singInUserInput:
+    properties:
+      password:
+        minLength: 6
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: Alex
+    url: https://github.com/SimilarEgs
+  description: This is a visual documentation of the endpoints of my todo-app project
+  title: Todo-App
+  version: "1.0"
+paths:
+  /api/lists/:
+    get:
+      consumes:
+      - application/json
+      description: API endpoint of getting all TodoLists
+      operationId: get-all-Lists
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getAllListsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: GetLists
+      tags:
+      - Lists
+    post:
+      consumes:
+      - application/json
+      description: API endpoint of creating a TodoList
+      operationId: create-list
+      parameters:
+      - description: TodoList data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.CreateListInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: CreateList
+      tags:
+      - Lists
+  /api/lists/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: API endpoint of deleting TodoList by id
+      operationId: delete-list-by-id
+      parameters:
+      - description: TodoList ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteList
+      tags:
+      - Lists
+    get:
+      consumes:
+      - application/json
+      description: API endpoint of getting todo list by id
+      operationId: get-list-by-id
+      parameters:
+      - description: TodoList ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Todolist'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: GetList
+      tags:
+      - Lists
+    put:
+      consumes:
+      - application/json
+      description: API endpoint of updating TodoList by id
+      operationId: delete-list-by-id
+      parameters:
+      - description: TodoList update data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UpdateListInput'
+      - description: TodoList ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: UpdateList
+      tags:
+      - Lists
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: login using user credentials
+      operationId: login
+      parameters:
+      - description: login credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.singInUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: SignIn
+      tags:
+      - Auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Creates new user account
+      operationId: create-user
+      parameters:
+      - description: data for registering a new user
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: SignUp
+      tags:
+      - Auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

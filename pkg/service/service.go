@@ -21,7 +21,7 @@ type Authorization interface {
 type TodoList interface {
 	// this method takes ID of the user and TodoList entity as args
 	// and return id of created TodoList in db
-	CreateList(userId int64, list entity.Todolist) (int64, error)
+	CreateList(userId int64, list entity.CreateListInput) (int64, error)
 
 	// this method takes user ID as args
 	// and return all lists that this user have

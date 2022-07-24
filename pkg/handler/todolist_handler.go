@@ -3,6 +3,7 @@ package handler
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -11,6 +12,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary     CreateList
+// @Security    ApiKeyAuth
+// @Tags        Lists
+// @Description API endpoint of creating a TodoList
+// @ID          create-list
+// @Accept      json
+// @Produce     json
+// @Param       input       body      entity.CreateListInput true "TodoList data"
+// @Success     201         {integer} integer                1
+// @Failure     400         {object}  errorResponse
+// @Failure     404         {object}  errorResponse
+// @Failure     500         {object}  errorResponse
+// @Failure     default     {object}  errorResponse
+// @Router      /api/lists/ [post]
 func (h *Hanlder) createList(c *gin.Context) {
 
 	// fetching user ID
@@ -21,7 +36,7 @@ func (h *Hanlder) createList(c *gin.Context) {
 	}
 
 	// var for storing input data
-	var input entity.Todolist
+	var input entity.CreateListInput
 
 	// validate input data
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -45,6 +60,23 @@ func (h *Hanlder) createList(c *gin.Context) {
 
 }
 
+type getAllListsResponse struct {
+	Data []entity.Todolist `json:"data"`
+}
+
+// @Summary     GetLists
+// @Security    ApiKeyAuth
+// @Tags        Lists
+// @Description API endpoint of getting all TodoLists
+// @ID          get-all-Lists
+// @Accept      json
+// @Produce     json
+// @Success     200          {object} getAllListsResponse
+// @Failure     400          {object} errorResponse
+// @Failure     404          {object} errorResponse
+// @Failure     500          {object} errorResponse
+// @Failure     default      {object} errorResponse
+// @Router      /api/lists/  [get]
 func (h *Hanlder) getAllLists(c *gin.Context) {
 
 	// fetching user ID
@@ -67,11 +99,25 @@ func (h *Hanlder) getAllLists(c *gin.Context) {
 	}
 
 	// if operation was successfully done, send code 200 to the client and json with slice of user todoLists
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"TodoLists:": userLists,
+	c.JSON(http.StatusOK, getAllListsResponse{
+		Data: userLists,
 	})
 }
 
+// @Summary     GetList
+// @Security    ApiKeyAuth
+// @Tags        Lists
+// @Description API endpoint of getting todo list by id
+// @ID          get-list-by-id
+// @Accept      json
+// @Produce     json
+// @Param		id			   path		  int true "TodoList ID"
+// @Success     200            {object}   entity.Todolist
+// @Failure     400            {object}   errorResponse
+// @Failure     404            {object}   errorResponse
+// @Failure     500            {object}   errorResponse
+// @Failure     default        {object}   errorResponse
+// @Router      /api/lists/{id} [get]
 func (h *Hanlder) getListById(c *gin.Context) {
 
 	// fetching user ID
@@ -84,6 +130,9 @@ func (h *Hanlder) getListById(c *gin.Context) {
 	// fetching listId and convert it into int64
 	listId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+		x := c.Param("id")
+		fmt.Println(x)
+		log.Println(err)
 		newErrorResponse(c, http.StatusBadRequest, "[Error] incorect list id")
 		return
 	}
@@ -110,6 +159,20 @@ func (h *Hanlder) getListById(c *gin.Context) {
 
 }
 
+// @Summary     DeleteList
+// @Security    ApiKeyAuth
+// @Tags        Lists
+// @Description API endpoint of deleting TodoList by id
+// @ID          delete-list-by-id
+// @Accept      json
+// @Produce     json
+// @Param		id			     path		int	 true "TodoList ID"
+// @Success     200              {string}   json
+// @Failure     400     		 {object}   errorResponse
+// @Failure     404              {object}   errorResponse
+// @Failure     500              {object}   errorResponse
+// @Failure     default          {object}   errorResponse
+// @Router      /api/lists/{id}  [delete]
 func (h *Hanlder) deleteListById(c *gin.Context) {
 
 	// fetching user ID
@@ -153,6 +216,21 @@ func (h *Hanlder) deleteListById(c *gin.Context) {
 	c.JSON(http.StatusOK, msg)
 }
 
+// @Summary     UpdateList
+// @Security    ApiKeyAuth
+// @Tags        Lists
+// @Description API endpoint of updating TodoList by id
+// @ID          delete-list-by-id
+// @Accept      json
+// @Produce     json
+// @Param       input       	 body       entity.UpdateListInput true "TodoList update data"
+// @Param		id			     path		int	                   true "TodoList ID"
+// @Success     200              {string}   json
+// @Failure     400              {object}   errorResponse
+// @Failure     404 			 {object}   errorResponse
+// @Failure     500              {object}   errorResponse
+// @Failure     default          {object}   errorResponse
+// @Router      /api/lists/{id}  [put]
 func (h *Hanlder) updateListById(c *gin.Context) {
 
 	// fetching user ID

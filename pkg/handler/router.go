@@ -1,8 +1,11 @@
 package handler
 
 import (
+	_ "github.com/SimilarEgs/go-todo-app/docs"
 	"github.com/SimilarEgs/go-todo-app/pkg/service"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Hanlder struct {
@@ -18,6 +21,9 @@ func NewHandler(services *service.Service) *Hanlder {
 func (h *Hanlder) InitRoutes() *gin.Engine {
 
 	router := gin.New()
+
+	// initilzing swagger endpoint
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// creating group of endpoints for authorization and registration
 	auth := router.Group("/auth")
@@ -45,7 +51,7 @@ func (h *Hanlder) InitRoutes() *gin.Engine {
 			}
 
 		}
-		
+
 		items := api.Group("items")
 		{
 			items.GET("/:item_id", h.getItemById)
