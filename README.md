@@ -12,6 +12,7 @@
 
 ## Technologies
 * web framework: [gin](https://github.com/gin-gonic/gin)
+* Secure auth: [JWT](https://github.com/golang-jwt/jwt)
 * containerize: [docker](https://www.docker.com/)
 * swagger: [swaggo](https://github.com/swaggo/swag)
 * database:
@@ -19,6 +20,7 @@
     * [postgres](https://github.com/lib/pq)
 * config: [viper](https://github.com/spf13/viper)
 * logger: [logrus](https://github.com/sirupsen/logrus)
+
 
 ## Usage
 - Clone repository
