@@ -11,6 +11,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary     CreateItem
+// @Security    ApiKeyAuth
+// @Tags        TodoListItems
+// @Description API endpoint of creating a TodoListItem
+// @ID          create-item
+// @Accept      json
+// @Produce     json
+// @Param       input       		   body       entity.CreateItemInput true "Item data"
+// @Param       id					   path       integer true "TodoList ID"
+// @Success     201         		   {object}   integer                1
+// @Failure     400         		   {object}   errorResponse
+// @Failure     404         		   {object}   errorResponse
+// @Failure     500         		   {object}   errorResponse
+// @Failure     default     		   {object}   errorResponse
+// @Router      /api/lists/{id}/items/ [post]
 func (h *Hanlder) createItem(c *gin.Context) {
 
 	listId, err := strconv.Atoi(c.Param("id"))
@@ -52,6 +67,24 @@ func (h *Hanlder) createItem(c *gin.Context) {
 
 }
 
+type getAllItemsResponse struct {
+	Data []entity.TodoItem `json:"data"`
+}
+
+// @Summary     GetAllItems
+// @Security    ApiKeyAuth
+// @Tags        TodoListItems
+// @Description API endpoint of getting all TodoListItems
+// @ID          get-items
+// @Accept      json
+// @Produce     json
+// @Param       id		       		   path       integer true "TodoList ID"
+// @Success     200         		   {object}   getAllItemsResponse
+// @Failure     400         		   {object}   errorResponse
+// @Failure     404         		   {object}   errorResponse
+// @Failure     500         		   {object}   errorResponse
+// @Failure     default     		   {object}   errorResponse
+// @Router      /api/lists/{id}/items/ [get]
 func (h *Hanlder) getAllItems(c *gin.Context) {
 
 	listId, err := strconv.Atoi(c.Param("id"))
@@ -69,12 +102,12 @@ func (h *Hanlder) getAllItems(c *gin.Context) {
 	items, err := h.services.TodoItem.GetAllItems(userId.(int64), int64(listId))
 	if err != nil {
 		if err == sql.ErrNoRows {
-			msg := fmt.Sprintf("[Error] todo list with %d - does not contain items", listId)
+			msg := fmt.Sprintf("[Error] todo list with ID %d - does not contain items", listId)
 			newErrorResponse(c, http.StatusBadRequest, msg)
 			return
 		}
 		if err == utils.ErrRowCntGet {
-			newErrorResponse(c, http.StatusInternalServerError, "[Error] there are no active schedules for current todo lists")
+			newErrorResponse(c, http.StatusInternalServerError, "[Error] there are no active schedules for current todo list")
 			return
 		}
 		msg := fmt.Sprintf("[Error] connection error, try again: %v", err)
@@ -82,11 +115,25 @@ func (h *Hanlder) getAllItems(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"TodoList contents": items,
+	c.JSON(http.StatusOK, getAllItemsResponse{
+		Data: items,
 	})
 }
 
+// @Summary     GetItemById
+// @Security    ApiKeyAuth
+// @Tags        TodoListItems
+// @Description API endpoint of getting TodoListItem by ID
+// @ID          get-item
+// @Accept      json
+// @Produce     json
+// @Param       id		       		   path       integer true "TodoItem ID"
+// @Success     200         		   {object}   entity.TodoItem
+// @Failure     400         		   {object}   errorResponse
+// @Failure     404         		   {object}   errorResponse
+// @Failure     500         		   {object}   errorResponse
+// @Failure     default     		   {object}   errorResponse
+// @Router      /api/items/{id}        [get]
 func (h *Hanlder) getItemById(c *gin.Context) {
 
 	itemId, err := strconv.Atoi(c.Param("item_id"))
@@ -118,6 +165,20 @@ func (h *Hanlder) getItemById(c *gin.Context) {
 	})
 }
 
+// @Summary     DeleteItemById
+// @Security    ApiKeyAuth
+// @Tags        TodoListItems
+// @Description API endpoint of deleting TodoListItem by ID
+// @ID          delete-item
+// @Accept      json
+// @Produce     json
+// @Param       id		       		   path       integer true "TodoItem ID"
+// @Success     200              	   {string}   json
+// @Failure     400         		   {object}   errorResponse
+// @Failure     404         		   {object}   errorResponse
+// @Failure     500         		   {object}   errorResponse
+// @Failure     default     		   {object}   errorResponse
+// @Router      /api/items/{id}        [delete]
 func (h *Hanlder) deleteItemById(c *gin.Context) {
 
 	itemId, err := strconv.Atoi(c.Param("item_id"))
@@ -154,6 +215,21 @@ func (h *Hanlder) deleteItemById(c *gin.Context) {
 
 }
 
+// @Summary     UpdateItemById
+// @Security    ApiKeyAuth
+// @Tags        TodoListItems
+// @Description API endpoint of updating TodoListItem by ID
+// @ID          update-item
+// @Accept      json
+// @Produce     json
+// @Param       input		       	   body       entity.UpdateItemInput true "TodoItem ID"
+// @Param       id		       		   path       integer 				 true "TodoItem ID"
+// @Success     200              	   {string}   json
+// @Failure     400         		   {object}   errorResponse
+// @Failure     404         		   {object}   errorResponse
+// @Failure     500         		   {object}   errorResponse
+// @Failure     default     		   {object}   errorResponse
+// @Router      /api/items/{id}        [put]
 func (h *Hanlder) updateItemById(c *gin.Context) {
 
 	itemId, err := strconv.Atoi(c.Param("item_id"))

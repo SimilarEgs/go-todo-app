@@ -47,6 +47,11 @@ func (i UpdateListInput) Validator() error {
 	return nil
 }
 
+type CreateItemInput struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description" binding:"required"`
+}
+
 type UpdateItemInput struct {
 	Title       *string `json:"title"`
 	Description *string `json:"description"`
