@@ -35,9 +35,6 @@ make compose-up
 
 ## Swagger 
 ```bash
-make swag
-```
-```bash
 http://localhost:8080/swagger/index.html
 ```
 ![SharedScreenshot](https://user-images.githubusercontent.com/90198202/180997065-50c58625-627e-4067-9791-166d1470d41d.jpg)
