@@ -17,7 +17,7 @@
 * swagger: [swaggo](https://github.com/swaggo/swag)
 * database:
     * [sqlx](https://github.com/jmoiron/sqlx) (db wrapper)
-    * [pq driver](https://github.com/lib/pq)
+    * [pq](https://github.com/lib/pq) (db driver)
 * config: [viper](https://github.com/spf13/viper)
 * logger: [logrus](https://github.com/sirupsen/logrus)
 
